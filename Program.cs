@@ -11,7 +11,9 @@ namespace git_all
 
             foreach (var directory in Directory.GetDirectories("."))
             {
-                if (!Directory.Exists(Path.Combine(directory, ".git")))
+                var gitPath = Path.Combine(directory, ".git");
+
+                if (!Directory.Exists(gitPath) && !File.Exists(gitPath))
                 {
                     continue;
                 }
