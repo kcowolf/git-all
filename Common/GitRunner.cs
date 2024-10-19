@@ -2,40 +2,33 @@
 using CliWrap.EventStream;
 using System.Text;
 
-namespace git_all
+namespace Common
 {
-    public class Program
+    public static class GitRunner
     {
-        static async Task Main(string[] args)
+        public static List<string> GetGitDirectories(string baseDirectory, bool recursive)
         {
-            var gitArgs = string.Join(' ', args);
-            var directories = Directory.GetDirectories(".");
-            var tasks = new Dictionary<string, Task<string>>();
+            var results = new List<string>();
+            var subDirectories = Directory.GetDirectories(baseDirectory);
 
-            foreach (var directory in directories)
+            foreach (var subDirectory in subDirectories)
             {
-                var gitPath = Path.Combine(directory, ".git");
-
-                if (!Directory.Exists(gitPath) && !File.Exists(gitPath))
+                var gitPath = Path.Combine(subDirectory, ".git");
+                if (Directory.Exists(gitPath) || File.Exists(gitPath))
                 {
-                    continue;
+                    results.Add(subDirectory);
                 }
 
-                tasks.Add(directory, Run(directory, gitArgs));
-            }
-
-            foreach (var directory in directories)
-            {
-                if (tasks.ContainsKey(directory))
+                if (recursive)
                 {
-                    Console.WriteLine(await tasks[directory]);
+                    results.AddRange(GetGitDirectories(subDirectory, true));
                 }
             }
 
-            Console.WriteLine("Done!");
+            return results;
         }
 
-        private static async Task<string> Run(string directory, string gitArgs)
+        public static async Task<string> Run(string directory, string gitArgs)
         {
             var output = new StringBuilder();
             output.AppendLine("\n--------------------------------------------------------------------------------");

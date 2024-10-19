@@ -1,0 +1,2 @@
+# Release Build
+dotnet publish -c Release -o output -p:PublishSingleFile=true -p:PublishTrimmed=true -p:IncludeNativeLibrariesForSelfExtract=true -p:CopyOutputSymbolsToPublishDirectory=false -r win-x64 --self-contained=true
